@@ -48,7 +48,8 @@ export type SiteSettings = {
   posts_page_id: number;
 };
 
-const isStaticExport = process.env.STATIC_EXPORT === "true";
+const useDemoContent =
+  process.env.STATIC_EXPORT === "true" || process.env.DEMO_CONTENT === "true";
 
 const staticSite: SiteSettings = {
   name: "The Founder Site",
@@ -201,7 +202,7 @@ function contentQuery(extra: Record<string, string | number> = {}): string {
 }
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
-  if (isStaticExport) {
+  if (useDemoContent) {
     return staticSite;
   }
 
@@ -209,7 +210,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 }
 
 export async function getPosts(perPage = 12): Promise<WordPressContent[]> {
-  if (isStaticExport) {
+  if (useDemoContent) {
     return staticPosts.slice(0, perPage);
   }
 
@@ -221,7 +222,7 @@ export async function getPosts(perPage = 12): Promise<WordPressContent[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<WordPressContent | null> {
-  if (isStaticExport) {
+  if (useDemoContent) {
     return staticPosts.find((post) => post.slug === slug) ?? null;
   }
 
@@ -233,7 +234,7 @@ export async function getPostBySlug(slug: string): Promise<WordPressContent | nu
 }
 
 export async function getPages(perPage = 100): Promise<WordPressContent[]> {
-  if (isStaticExport) {
+  if (useDemoContent) {
     return staticPages.slice(0, perPage);
   }
 
@@ -246,7 +247,7 @@ export async function getPages(perPage = 100): Promise<WordPressContent[]> {
 }
 
 export async function getPageBySlug(slug: string): Promise<WordPressContent | null> {
-  if (isStaticExport) {
+  if (useDemoContent) {
     return staticPages.find((page) => page.slug === slug) ?? null;
   }
 

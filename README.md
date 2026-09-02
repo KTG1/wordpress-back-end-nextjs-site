@@ -8,6 +8,8 @@ The Next.js frontend is published at <https://ktg1.github.io/wordpress-back-end-
 
 GitHub Pages can only serve static files, so the demo contains a build-time snapshot of the example WordPress content. The regular Next.js build remains connected to the WordPress REST API and publish webhook for deployment on a server-capable host.
 
+For a Vercel preview before WordPress has a public URL, set `DEMO_CONTENT=true`. Remove that variable after configuring the production WordPress URLs to switch back to live REST API content.
+
 ## Architecture
 
 ```text

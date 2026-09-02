@@ -5,7 +5,8 @@ import { getPosts, getSiteSettings } from "@/lib/wordpress";
 export default async function HomePage() {
   const [site, posts] = await Promise.all([getSiteSettings(), getPosts(3)]);
   const isConnected = Boolean(site);
-  const isStaticExport = process.env.STATIC_EXPORT === "true";
+  const useDemoContent =
+    process.env.STATIC_EXPORT === "true" || process.env.DEMO_CONTENT === "true";
 
   return (
     <main id="main-content">
@@ -28,7 +29,7 @@ export default async function HomePage() {
             </Link>
             <span className={`connection-state ${isConnected ? "is-live" : ""}`}>
               <span aria-hidden="true" />
-              {isStaticExport
+              {useDemoContent
                 ? "WordPress snapshot"
                 : isConnected
                   ? "WordPress connected"
@@ -70,9 +71,9 @@ export default async function HomePage() {
         <div className="shell system-strip-inner">
           <p>One editorial source</p>
           <span aria-hidden="true" />
-          <p>{isStaticExport ? "Fast static delivery" : "Fast server rendering"}</p>
+          <p>{useDemoContent ? "Fast managed delivery" : "Fast server rendering"}</p>
           <span aria-hidden="true" />
-          <p>{isStaticExport ? "Deployed on GitHub Pages" : "Automatic publishing updates"}</p>
+          <p>{useDemoContent ? "Ready for a live WordPress URL" : "Automatic publishing updates"}</p>
         </div>
       </section>
     </main>
