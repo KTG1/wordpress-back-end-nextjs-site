@@ -6,6 +6,7 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ siteName = "Founder Site" }: SiteHeaderProps) {
   const wordpressUrl = process.env.WORDPRESS_PUBLIC_URL ?? "http://localhost:8080";
+  const isStaticExport = process.env.STATIC_EXPORT === "true";
 
   return (
     <header className="site-header">
@@ -19,12 +20,20 @@ export function SiteHeader({ siteName = "Founder Site" }: SiteHeaderProps) {
         <nav aria-label="Primary navigation" className="primary-nav">
           <Link href="/">Home</Link>
           <Link href="/blog">Writing</Link>
-          <a href={`${wordpressUrl}/wp-admin`} rel="noreferrer">
-            Editor
-          </a>
+          {isStaticExport ? (
+            <a
+              href="https://github.com/KTG1/wordpress-back-end-nextjs-site"
+              rel="noreferrer"
+            >
+              Repository
+            </a>
+          ) : (
+            <a href={`${wordpressUrl}/wp-admin`} rel="noreferrer">
+              Editor
+            </a>
+          )}
         </nav>
       </div>
     </header>
   );
 }
-

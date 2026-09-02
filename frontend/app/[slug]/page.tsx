@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { WpContent } from "@/components/wp-content";
-import { contentMetadata, getPageBySlug, plainText } from "@/lib/wordpress";
+import { contentMetadata, getPageBySlug, getPages, plainText } from "@/lib/wordpress";
 
 type ContentPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export const revalidate = 60;
+export async function generateStaticParams() {
+  const pages = await getPages(100);
+
+  return pages.map((page) => ({ slug: page.slug }));
+}
 
 export async function generateMetadata({ params }: ContentPageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -39,4 +43,3 @@ export default async function ContentPage({ params }: ContentPageProps) {
     </main>
   );
 }
-

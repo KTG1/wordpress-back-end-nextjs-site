@@ -2,11 +2,10 @@ import Link from "next/link";
 import { PostCard } from "@/components/post-card";
 import { getPosts, getSiteSettings } from "@/lib/wordpress";
 
-export const revalidate = 60;
-
 export default async function HomePage() {
   const [site, posts] = await Promise.all([getSiteSettings(), getPosts(3)]);
   const isConnected = Boolean(site);
+  const isStaticExport = process.env.STATIC_EXPORT === "true";
 
   return (
     <main id="main-content">
@@ -29,7 +28,11 @@ export default async function HomePage() {
             </Link>
             <span className={`connection-state ${isConnected ? "is-live" : ""}`}>
               <span aria-hidden="true" />
-              {isConnected ? "WordPress connected" : "Waiting for WordPress"}
+              {isStaticExport
+                ? "WordPress snapshot"
+                : isConnected
+                  ? "WordPress connected"
+                  : "Waiting for WordPress"}
             </span>
           </div>
         </div>
@@ -67,12 +70,11 @@ export default async function HomePage() {
         <div className="shell system-strip-inner">
           <p>One editorial source</p>
           <span aria-hidden="true" />
-          <p>Fast server rendering</p>
+          <p>{isStaticExport ? "Fast static delivery" : "Fast server rendering"}</p>
           <span aria-hidden="true" />
-          <p>Automatic publishing updates</p>
+          <p>{isStaticExport ? "Deployed on GitHub Pages" : "Automatic publishing updates"}</p>
         </div>
       </section>
     </main>
   );
 }
-

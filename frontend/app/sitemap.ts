@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getPages, getPosts } from "@/lib/wordpress";
 
+export const dynamic = "force-static";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const [posts, pages] = await Promise.all([getPosts(100), getPages(100)]);
@@ -22,4 +24,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 }
-

@@ -7,8 +7,6 @@ export const metadata: Metadata = {
   description: "Field notes, decisions, and lessons from the work.",
 };
 
-export const revalidate = 60;
-
 export default async function BlogPage() {
   const posts = await getPosts(24);
 
@@ -35,4 +33,3 @@ export default async function BlogPage() {
     </main>
   );
 }
-

@@ -2,6 +2,12 @@
 
 A production-minded starter that keeps editorial work in WordPress and serves the public site with Next.js.
 
+## Live demo
+
+The Next.js frontend is published at <https://ktg1.github.io/wordpress-back-end-nextjs-site/>.
+
+GitHub Pages can only serve static files, so the demo contains a build-time snapshot of the example WordPress content. The regular Next.js build remains connected to the WordPress REST API and publish webhook for deployment on a server-capable host.
+
 ## Architecture
 
 ```text

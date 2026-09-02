@@ -6,6 +6,7 @@ import {
   authorName,
   contentMetadata,
   getPostBySlug,
+  getPosts,
   plainText,
 } from "@/lib/wordpress";
 
@@ -13,7 +14,11 @@ type PostPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export const revalidate = 60;
+export async function generateStaticParams() {
+  const posts = await getPosts(100);
+
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -57,4 +62,3 @@ export default async function PostPage({ params }: PostPageProps) {
     </main>
   );
 }
-
