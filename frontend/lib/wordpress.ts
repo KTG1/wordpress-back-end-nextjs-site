@@ -1,4 +1,9 @@
 import sanitizeHtml from "sanitize-html";
+import {
+  defaultSettlementCalculatorConfig,
+  normalizeSettlementCalculatorConfig,
+  type SettlementCalculatorConfig,
+} from "@/lib/settlement-calculator-config";
 
 export type RenderedText = {
   rendered: string;
@@ -296,6 +301,23 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   }
 
   return wpFetch<SiteSettings>("/headless/v1/site", 300);
+}
+
+export async function getSettlementCalculatorConfig(): Promise<SettlementCalculatorConfig> {
+  if (useDemoContent) {
+    return defaultSettlementCalculatorConfig;
+  }
+
+  const publicWordPressUrl = (
+    process.env.WORDPRESS_PUBLIC_URL ??
+    (wordpressComSite ? `https://${wordpressComSite}` : apiBase.replace(/\/wp-json$/, ""))
+  ).replace(/\/$/, "");
+  const configuration = await fetchJson<unknown>(
+    `${publicWordPressUrl}/wp-json/founder-settlement/v1/config`,
+    60,
+  );
+
+  return normalizeSettlementCalculatorConfig(configuration);
 }
 
 export async function getPosts(perPage = 12): Promise<WordPressContent[]> {

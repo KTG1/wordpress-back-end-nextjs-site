@@ -1342,6 +1342,26 @@ img {
   grid-template-columns: minmax(0, 1.52fr) minmax(330px, 0.78fr);
 }
 
+.calculator-unavailable {
+  max-width: 760px;
+  padding: clamp(38px, 6vw, 72px);
+}
+
+.calculator-unavailable h2 {
+  margin: 0 0 14px;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.calculator-unavailable > p:last-child {
+  max-width: 620px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
 .calculator-controls {
   min-width: 0;
   padding: clamp(32px, 5vw, 58px);

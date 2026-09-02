@@ -39,6 +39,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress/wp-content/plugins/headless-site-core:/var/www/html/wp-content/plugins/headless-site-core:ro
+      - ./wordpress/wp-content/plugins/founder-settlement-calculator:/var/www/html/wp-content/plugins/founder-settlement-calculator:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost/wp-json/ >/dev/null || exit 1"]
       interval: 10s
@@ -65,6 +66,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress/wp-content/plugins/headless-site-core:/var/www/html/wp-content/plugins/headless-site-core:ro
+      - ./wordpress/wp-content/plugins/founder-settlement-calculator:/var/www/html/wp-content/plugins/founder-settlement-calculator:ro
     user: "33:33"
     working_dir: /var/www/html
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SettlementCalculator } from "@/components/settlement-calculator";
+import { getSettlementCalculatorConfig } from "@/lib/wordpress";
 
 export const metadata: Metadata = {
   title: "Personal Injury Settlement Calculator",
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
     "Use documented losses and transparent assumptions to explore an educational personal-injury settlement planning range.",
 };
 
-export default function SettlementCalculatorPage() {
+export default async function SettlementCalculatorPage() {
+  const calculatorConfig = await getSettlementCalculatorConfig();
+
   return (
     <main className="calculator-page" id="main-content">
       <header className="shell calculator-intro">
@@ -29,7 +32,7 @@ export default function SettlementCalculatorPage() {
       </header>
 
       <div className="shell">
-        <SettlementCalculator />
+        <SettlementCalculator config={calculatorConfig} />
       </div>
 
       <section className="shell calculator-method" aria-labelledby="method-heading">

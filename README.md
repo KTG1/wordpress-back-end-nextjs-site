@@ -27,6 +27,7 @@ Editor -> WordPress admin -> WordPress REST API -> Next.js server -> Visitor
 - **Next.js** owns routing, rendering, metadata, the sitemap, and the public design.
 - **MySQL** stores WordPress data.
 - **Headless Site Core** connects publishing events to Next.js cache revalidation.
+- **Founder Settlement Calculator Configuration** lets administrators manage calculator defaults and assumptions from WordPress.
 
 ## Start locally
 
@@ -67,6 +68,10 @@ npm run dev
 | REST API | WordPress only; never exposed as the main site |
 
 The plugin adds an **SEO & social preview** box to posts and pages. Its title and description flow into Next.js metadata without requiring a third-party WordPress plugin.
+
+The calculator companion plugin adds **Settings → Settlement Calculator** in WordPress. It publishes the approved configuration at `/wp-json/founder-settlement/v1/config`; the Next.js calculator refreshes that configuration approximately once per minute and falls back to its safe built-in defaults if the endpoint is unavailable.
+
+An upload-ready ZIP is generated at `wordpress/dist/founder-settlement-calculator.zip`. Custom plugin installation on WordPress.com requires a plugin-enabled plan.
 
 ## Production configuration
 
