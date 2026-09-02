@@ -19,8 +19,14 @@ export function SiteHeader({ siteName = "Founder Site" }: SiteHeaderProps) {
           <span>{siteName}</span>
         </Link>
         <nav aria-label="Primary navigation" className="primary-nav">
-          <Link href="/about">About</Link>
+          <Link className="nav-quiet" href="/">
+            Home
+          </Link>
+          <Link href="/car-accident-terminology">Terminology</Link>
           <Link href="/blog">Writing</Link>
+          <Link className="nav-quiet" href="/about">
+            About
+          </Link>
           {useDemoContent ? (
             <a
               href="https://github.com/KTG1/wordpress-back-end-nextjs-site"
