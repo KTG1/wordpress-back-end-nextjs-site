@@ -69,7 +69,7 @@ npm run dev
 
 The plugin adds an **SEO & social preview** box to posts and pages. Its title and description flow into Next.js metadata without requiring a third-party WordPress plugin.
 
-The calculator companion plugin adds **Settings → Settlement Calculator** in WordPress. It publishes the approved configuration at `/wp-json/founder-settlement/v1/config`; the Next.js calculator refreshes that configuration approximately once per minute and falls back to its safe built-in defaults if the endpoint is unavailable.
+The calculator companion plugin adds **Settings → Settlement Calculator** in WordPress. Administrators can manage calculator defaults, public labels, helper text, guidance sections, FAQs, and internal links. It publishes the approved configuration at `/wp-json/founder-settlement/v1/config`; the Next.js calculator refreshes that configuration approximately once per minute and falls back to its safe built-in defaults if the endpoint is unavailable.
 
 An upload-ready ZIP is generated at `wordpress/dist/founder-settlement-calculator.zip`. Custom plugin installation on WordPress.com requires a plugin-enabled plan.
 

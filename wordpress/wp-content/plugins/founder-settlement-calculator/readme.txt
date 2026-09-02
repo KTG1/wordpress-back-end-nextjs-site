@@ -2,7 +2,7 @@
 Contributors: KTG1
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 
 Provides the WordPress configuration screen and public REST endpoint used by The Founder Site's Next.js settlement calculator.
@@ -14,8 +14,25 @@ Provides the WordPress configuration screen and public REST endpoint used by The
 * Choose currency and starting values
 * Configure five injury-impact ranges
 * Configure the possible-fault slider
+* Edit public page headings, helper text, result labels, and button labels
+* Add or remove guidance sections
+* Add up to twelve internal links with descriptions
+* Add up to twelve expandable FAQ entries
 * Maintain the required educational disclaimer
 * Public configuration endpoint at /wp-json/founder-settlement/v1/config
+
+== Changelog ==
+
+= 1.1.0 =
+
+* Added editable public labels and financial-field helper text.
+* Added managed guidance sections, internal links, and FAQs.
+* Added a clearer settings navigation and repeatable editor controls.
+* Tightened validation for public configuration data and internal paths.
+
+= 1.0.0 =
+
+* Initial calculator configuration and REST endpoint.
 
 == Installation ==
 

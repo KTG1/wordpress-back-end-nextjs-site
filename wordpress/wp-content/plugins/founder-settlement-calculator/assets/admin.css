@@ -1,0 +1,96 @@
+.fsc-admin-nav {
+  position: sticky;
+  z-index: 10;
+  top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 1100px;
+  margin: 22px 0 30px;
+  padding: 8px;
+  border: 1px solid #c3c4c7;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+}
+
+.fsc-admin-nav a {
+  padding: 8px 12px;
+  text-decoration: none;
+}
+
+.fsc-admin-nav a:hover,
+.fsc-admin-nav a:focus {
+  background: #f0f0f1;
+}
+
+.wrap form > h2 {
+  max-width: 1100px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 2px solid #1d2327;
+  scroll-margin-top: 96px;
+}
+
+.wrap form > h2:first-of-type {
+  margin-top: 0;
+}
+
+.fsc-label-table,
+.fsc-editor-table {
+  max-width: 1100px;
+}
+
+.fsc-editor-table {
+  margin-top: 14px;
+}
+
+.fsc-editor-table th,
+.fsc-editor-table td {
+  vertical-align: top;
+}
+
+.fsc-editor-table input,
+.fsc-editor-table textarea {
+  width: 100%;
+}
+
+.fsc-editor-table .small-text {
+  width: 90px;
+}
+
+.fsc-action-column {
+  width: 74px;
+}
+
+.fsc-repeater .button-link-delete {
+  margin-top: 7px;
+}
+
+@media (max-width: 782px) {
+  .fsc-admin-nav {
+    position: static;
+  }
+
+  .fsc-editor-table,
+  .fsc-editor-table tbody,
+  .fsc-editor-table tr,
+  .fsc-editor-table th,
+  .fsc-editor-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .fsc-editor-table thead {
+    display: none;
+  }
+
+  .fsc-editor-table tr {
+    padding: 12px;
+    border-bottom: 1px solid #c3c4c7;
+  }
+
+  .fsc-editor-table td,
+  .fsc-editor-table th {
+    padding: 6px 0;
+  }
+}

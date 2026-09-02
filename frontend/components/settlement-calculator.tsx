@@ -7,12 +7,12 @@ import type {
   SettlementMoneyKey,
 } from "@/lib/settlement-calculator-config";
 
-const moneyFields: Array<{ key: SettlementMoneyKey; label: string; hint: string }> = [
-  { key: "medical", label: "Medical expenses", hint: "Paid or outstanding bills" },
-  { key: "futureMedical", label: "Expected future care", hint: "Treatment that may still be needed" },
-  { key: "lostIncome", label: "Lost income", hint: "Documented earnings already missed" },
-  { key: "property", label: "Property damage", hint: "Vehicle and other property" },
-  { key: "other", label: "Other documented costs", hint: "Travel, care, equipment, and similar expenses" },
+const moneyKeys: SettlementMoneyKey[] = [
+  "medical",
+  "futureMedical",
+  "lostIncome",
+  "property",
+  "other",
 ];
 
 function clampMoney(raw: string, maximum: number) {
@@ -41,6 +41,9 @@ export function SettlementCalculator({ config }: { config: SettlementCalculatorC
       }),
     [config.currency],
   );
+  const currencySymbol =
+    moneyFormatter.formatToParts(0).find((part) => part.type === "currency")?.value ??
+    config.currency;
 
   const result = useMemo(() => {
     const economic = Object.values(money).reduce((sum, value) => sum + value, 0);
@@ -90,9 +93,9 @@ export function SettlementCalculator({ config }: { config: SettlementCalculatorC
     return (
       <section className="settlement-calculator" aria-labelledby="calculator-heading">
         <div className="calculator-unavailable">
-          <p className="calculator-kicker">Calculator status</p>
-          <h2 id="calculator-heading">This worksheet is temporarily unavailable.</h2>
-          <p>An administrator can enable it in WordPress under Settings → Settlement Calculator.</p>
+          <p className="calculator-kicker">{config.labels.unavailableKicker}</p>
+          <h2 id="calculator-heading">{config.labels.unavailableHeading}</h2>
+          <p>{config.labels.unavailableBody}</p>
         </div>
       </section>
     );
@@ -104,50 +107,54 @@ export function SettlementCalculator({ config }: { config: SettlementCalculatorC
         <form className="calculator-controls" onSubmit={(event) => event.preventDefault()}>
           <div className="calculator-heading">
             <div>
-              <p className="calculator-kicker">Your working figures</p>
-              <h2 id="calculator-heading">Build a planning range</h2>
+              <p className="calculator-kicker">{config.labels.formKicker}</p>
+              <h2 id="calculator-heading">{config.labels.formHeading}</h2>
             </div>
             <button className="calculator-reset" onClick={resetCalculator} type="button">
-              Reset values
+              {config.labels.resetButton}
             </button>
           </div>
 
           <fieldset className="calculator-fieldset">
-            <legend>Documented financial losses</legend>
+            <legend>{config.labels.financialLegend}</legend>
             <div className="calculator-money-grid">
-              {moneyFields.map((field) => (
-                <label className="calculator-money-field" key={field.key}>
-                  <span>
-                    {field.label}
-                    <small>{field.hint}</small>
-                  </span>
-                  <span className="calculator-currency">
-                    <span aria-hidden="true">$</span>
-                    <input
-                      aria-label={`${field.label} in dollars`}
-                      inputMode="decimal"
-                      max={config.maxAmount}
-                      min="0"
-                      onChange={(event) => updateMoney(field.key, event.target.value)}
-                      step="100"
-                      type="number"
-                      value={money[field.key]}
-                    />
-                  </span>
-                </label>
-              ))}
+              {moneyKeys.map((key) => {
+                const field = config.moneyFields[key];
+
+                return (
+                  <label className="calculator-money-field" key={key}>
+                    <span>
+                      {field.label}
+                      <small>{field.hint}</small>
+                    </span>
+                    <span className="calculator-currency">
+                      <span aria-hidden="true">{currencySymbol}</span>
+                      <input
+                        aria-label={`${field.label} in ${config.currency}`}
+                        inputMode="decimal"
+                        max={config.maxAmount}
+                        min="0"
+                        onChange={(event) => updateMoney(key, event.target.value)}
+                        step="100"
+                        type="number"
+                        value={money[key]}
+                      />
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </fieldset>
 
           <fieldset className="calculator-fieldset calculator-assumptions">
-            <legend>Planning assumptions</legend>
+            <legend>{config.labels.assumptionsLegend}</legend>
             <label className="calculator-range-field">
               <span>
-                Injury impact
+                {config.labels.injuryImpact}
                 <strong>{config.impactBands[impact].label}</strong>
               </span>
               <input
-                aria-label="Injury impact"
+                aria-label={config.labels.injuryImpact}
                 max={config.impactBands.length - 1}
                 min="0"
                 onChange={(event) => setImpact(Number(event.target.value))}
@@ -162,11 +169,11 @@ export function SettlementCalculator({ config }: { config: SettlementCalculatorC
 
             <label className="calculator-range-field">
               <span>
-                Possible share of fault
+                {config.labels.faultShare}
                 <strong>{fault}%</strong>
               </span>
               <input
-                aria-label="Possible share of fault"
+                aria-label={config.labels.faultShare}
                 max={config.maxFault}
                 min="0"
                 onChange={(event) => setFault(Number(event.target.value))}
@@ -183,55 +190,47 @@ export function SettlementCalculator({ config }: { config: SettlementCalculatorC
         </form>
 
         <aside className="calculator-result" aria-live="polite">
-          <p className="calculator-result-label">Educational planning range</p>
+          <p className="calculator-result-label">{config.labels.resultLabel}</p>
           <div className="calculator-result-range">
             <strong>{moneyFormatter.format(result.low)}</strong>
             <span>to</span>
             <strong>{moneyFormatter.format(result.high)}</strong>
           </div>
-          <p className="calculator-result-context">
-            Based only on the figures and assumptions entered here—not a prediction of a
-            settlement or verdict.
-          </p>
+          <p className="calculator-result-context">{config.labels.resultContext}</p>
 
           <dl className="calculator-breakdown">
             <div>
-              <dt>Economic losses</dt>
+              <dt>{config.labels.economicLosses}</dt>
               <dd>{moneyFormatter.format(result.economic)}</dd>
             </div>
             <div>
-              <dt>Impact assumption</dt>
+              <dt>{config.labels.impactAssumption}</dt>
               <dd>
                 {result.band.low}×–{result.band.high}×
               </dd>
             </div>
             <div>
-              <dt>Illustrative impact amount</dt>
+              <dt>{config.labels.impactAmount}</dt>
               <dd>
                 {moneyFormatter.format(result.impactLow)}–
                 {moneyFormatter.format(result.impactHigh)}
               </dd>
             </div>
             <div>
-              <dt>Fault adjustment</dt>
+              <dt>{config.labels.faultAdjustment}</dt>
               <dd>−{fault}%</dd>
             </div>
           </dl>
 
           <details className="calculator-formula">
-            <summary>See the formula</summary>
-            <p>
-              (Economic losses + treatment costs × impact assumption) × remaining fault
-              percentage.
-            </p>
+            <summary>{config.labels.formulaSummary}</summary>
+            <p>{config.labels.formulaBody}</p>
           </details>
 
           <button className="calculator-copy" onClick={copySummary} type="button">
-            {copied ? "Estimate copied" : "Copy estimate summary"}
+            {copied ? config.labels.copiedButton : config.labels.copyButton}
           </button>
-          <p className="calculator-disclaimer">
-            {config.disclaimer}
-          </p>
+          <p className="calculator-disclaimer">{config.disclaimer}</p>
         </aside>
       </div>
     </section>
