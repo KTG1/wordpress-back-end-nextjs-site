@@ -1,0 +1,89 @@
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - database_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_BACKEND_URL: ${WORDPRESS_BACKEND_URL}
+      HEADLESS_FRONTEND_URL: ${FRONTEND_URL}
+      HEADLESS_REVALIDATION_SECRET: ${REVALIDATION_SECRET}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'local');
+        define('WP_HOME', getenv('WORDPRESS_BACKEND_URL') ?: 'http://localhost:8080');
+        define('WP_SITEURL', getenv('WORDPRESS_BACKEND_URL') ?: 'http://localhost:8080');
+        define('DISALLOW_FILE_EDIT', true);
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wordpress/wp-content/plugins/headless-site-core:/var/www/html/wp-content/plugins/headless-site-core:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/wp-json/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  wpcli:
+    image: wordpress:cli-php8.3
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_BACKEND_URL: ${WORDPRESS_BACKEND_URL}
+      WORDPRESS_TITLE: ${WORDPRESS_TITLE}
+      WORDPRESS_ADMIN_USER: ${WORDPRESS_ADMIN_USER}
+      WORDPRESS_ADMIN_PASSWORD: ${WORDPRESS_ADMIN_PASSWORD}
+      WORDPRESS_ADMIN_EMAIL: ${WORDPRESS_ADMIN_EMAIL}
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wordpress/wp-content/plugins/headless-site-core:/var/www/html/wp-content/plugins/headless-site-core:ro
+    user: "33:33"
+    working_dir: /var/www/html
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      SITE_URL: ${FRONTEND_URL}
+      WORDPRESS_API_URL: http://wordpress/wp-json
+      WORDPRESS_PUBLIC_URL: ${WORDPRESS_BACKEND_URL}
+      REVALIDATION_SECRET: ${REVALIDATION_SECRET}
+
+volumes:
+  database_data:
+  wordpress_data:
