@@ -10,6 +10,12 @@ GitHub Pages can only serve static files, so the demo contains a build-time snap
 
 For a Vercel preview before WordPress has a public URL, set `DEMO_CONTENT=true`. Remove that variable after configuring the production WordPress URLs to switch back to live REST API content.
 
+Free WordPress.com sites use a different public API from self-hosted WordPress. Set
+`WORDPRESS_COM_SITE=your-site.wordpress.com` together with `WORDPRESS_PUBLIC_URL`
+to use that API without changing the frontend routes. The self-hosted
+`WORDPRESS_API_URL` integration remains the production option when the custom
+plugin and signed publish webhook are available.
+
 ## Architecture
 
 ```text

@@ -48,6 +48,35 @@ export type SiteSettings = {
   posts_page_id: number;
 };
 
+type WordPressComAuthor = {
+  ID: number;
+  name: string;
+};
+
+type WordPressComContent = {
+  ID: number;
+  date: string;
+  modified: string;
+  slug: string;
+  URL: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author?: WordPressComAuthor;
+  featured_image?: string;
+};
+
+type WordPressComCollection = {
+  posts: WordPressComContent[];
+};
+
+type WordPressComSite = {
+  name: string;
+  description: string;
+  URL: string;
+  lang?: string | false;
+};
+
 const useDemoContent =
   process.env.STATIC_EXPORT === "true" || process.env.DEMO_CONTENT === "true";
 
@@ -156,10 +185,14 @@ const apiBase = (process.env.WORDPRESS_API_URL ?? "http://localhost:8080/wp-json
   /\/$/,
   "",
 );
+const wordpressComSite = process.env.WORDPRESS_COM_SITE?.trim();
+const wordpressComApiBase = wordpressComSite
+  ? `https://public-api.wordpress.com/rest/v1.1/sites/${encodeURIComponent(wordpressComSite)}`
+  : null;
 
-async function wpFetch<T>(path: string, revalidate = 60): Promise<T | null> {
+async function fetchJson<T>(url: string, revalidate: number): Promise<T | null> {
   try {
-    const response = await fetch(`${apiBase}${path}`, {
+    const response = await fetch(url, {
       headers: { Accept: "application/json" },
       next: { revalidate },
     });
@@ -172,6 +205,47 @@ async function wpFetch<T>(path: string, revalidate = 60): Promise<T | null> {
   } catch {
     return null;
   }
+}
+
+async function wpFetch<T>(path: string, revalidate = 60): Promise<T | null> {
+  return fetchJson<T>(`${apiBase}${path}`, revalidate);
+}
+
+async function wpComFetch<T>(path: string, revalidate = 60): Promise<T | null> {
+  if (!wordpressComApiBase) {
+    return null;
+  }
+
+  return fetchJson<T>(`${wordpressComApiBase}${path}`, revalidate);
+}
+
+function fromWordPressCom(item: WordPressComContent): WordPressContent {
+  const featuredMedia = item.featured_image
+    ? [
+        {
+          id: item.ID,
+          alt_text: plainText(item.title),
+          source_url: item.featured_image,
+        },
+      ]
+    : undefined;
+
+  return {
+    id: item.ID,
+    date: item.date,
+    modified: item.modified,
+    slug: item.slug,
+    link: item.URL,
+    title: { rendered: item.title },
+    excerpt: { rendered: item.excerpt },
+    content: { rendered: item.content },
+    _embedded: {
+      ...(featuredMedia ? { "wp:featuredmedia": featuredMedia } : {}),
+      ...(item.author
+        ? { author: [{ id: item.author.ID, name: item.author.name }] }
+        : {}),
+    },
+  };
 }
 
 const collectionFields = [
@@ -206,12 +280,35 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
     return staticSite;
   }
 
+  if (wordpressComSite) {
+    const site = await wpComFetch<WordPressComSite>("", 300);
+
+    return site
+      ? {
+          name: site.name,
+          description: site.description,
+          language: site.lang || "en-US",
+          frontend_url: process.env.SITE_URL ?? site.URL,
+          front_page_id: 0,
+          posts_page_id: 0,
+        }
+      : null;
+  }
+
   return wpFetch<SiteSettings>("/headless/v1/site", 300);
 }
 
 export async function getPosts(perPage = 12): Promise<WordPressContent[]> {
   if (useDemoContent) {
     return staticPosts.slice(0, perPage);
+  }
+
+  if (wordpressComSite) {
+    const collection = await wpComFetch<WordPressComCollection>(
+      `/posts/?number=${perPage}&type=post&order_by=date&order=DESC`,
+    );
+
+    return collection?.posts.map(fromWordPressCom) ?? [];
   }
 
   return (
@@ -226,6 +323,14 @@ export async function getPostBySlug(slug: string): Promise<WordPressContent | nu
     return staticPosts.find((post) => post.slug === slug) ?? null;
   }
 
+  if (wordpressComSite) {
+    const post = await wpComFetch<WordPressComContent>(
+      `/posts/slug:${encodeURIComponent(slug)}`,
+    );
+
+    return post ? fromWordPressCom(post) : null;
+  }
+
   const posts = await wpFetch<WordPressContent[]>(
     `/wp/v2/posts?${contentQuery({ slug, per_page: 1 })}`,
   );
@@ -236,6 +341,15 @@ export async function getPostBySlug(slug: string): Promise<WordPressContent | nu
 export async function getPages(perPage = 100): Promise<WordPressContent[]> {
   if (useDemoContent) {
     return staticPages.slice(0, perPage);
+  }
+
+  if (wordpressComSite) {
+    const collection = await wpComFetch<WordPressComCollection>(
+      `/posts/?number=${perPage}&type=page&order_by=menu_order&order=ASC`,
+      300,
+    );
+
+    return collection?.posts.map(fromWordPressCom) ?? [];
   }
 
   return (
@@ -249,6 +363,14 @@ export async function getPages(perPage = 100): Promise<WordPressContent[]> {
 export async function getPageBySlug(slug: string): Promise<WordPressContent | null> {
   if (useDemoContent) {
     return staticPages.find((page) => page.slug === slug) ?? null;
+  }
+
+  if (wordpressComSite) {
+    const page = await wpComFetch<WordPressComContent>(
+      `/posts/slug:${encodeURIComponent(slug)}`,
+    );
+
+    return page ? fromWordPressCom(page) : null;
   }
 
   const pages = await wpFetch<WordPressContent[]>(
