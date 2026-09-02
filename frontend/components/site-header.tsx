@@ -19,7 +19,7 @@ export function SiteHeader({ siteName = "Founder Site" }: SiteHeaderProps) {
           <span>{siteName}</span>
         </Link>
         <nav aria-label="Primary navigation" className="primary-nav">
-          <Link href="/">Home</Link>
+          <Link href="/about">About</Link>
           <Link href="/blog">Writing</Link>
           {useDemoContent ? (
             <a
@@ -29,8 +29,8 @@ export function SiteHeader({ siteName = "Founder Site" }: SiteHeaderProps) {
               Repository
             </a>
           ) : (
-            <a href={`${wordpressUrl}/wp-admin`} rel="noreferrer">
-              Editor
+            <a className="header-cta" href={`${wordpressUrl}/wp-admin`} rel="noreferrer">
+              WordPress editor
             </a>
           )}
         </nav>
