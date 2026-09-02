@@ -35,6 +35,7 @@ export function SiteFooter() {
           <Link href="/">Home</Link>
           <Link href="/blog">All writing</Link>
           <Link href="/car-accident-terminology">Terminology guide</Link>
+          <Link href="/settlement-calculator">Settlement calculator</Link>
           <Link href="/about">About</Link>
         </nav>
 
@@ -54,6 +55,7 @@ export function SiteFooter() {
         <p>WordPress editorial system · Next.js delivery</p>
         <div>
           <Link href="/sitemap.xml">Sitemap</Link>
+          <Link href="/settlement-calculator">Calculator</Link>
           <Link href="/blog">Archive</Link>
         </div>
       </div>

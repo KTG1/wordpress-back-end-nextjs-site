@@ -23,7 +23,10 @@ export function SiteHeader({ siteName = "Founder Site" }: SiteHeaderProps) {
             Home
           </Link>
           <Link href="/car-accident-terminology">Terminology</Link>
-          <Link href="/blog">Writing</Link>
+          <Link href="/settlement-calculator">Calculator</Link>
+          <Link className="nav-small-hide" href="/blog">
+            Writing
+          </Link>
           <Link className="nav-quiet" href="/about">
             About
           </Link>
