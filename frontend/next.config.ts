@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const isStaticExport = process.env.STATIC_EXPORT === "true";
+const isVercel = process.env.VERCEL === "1";
 const repositoryBasePath = "/wordpress-back-end-nextjs-site";
 
 const wordpressUrl = new URL(
@@ -9,7 +10,7 @@ const wordpressUrl = new URL(
 
 const nextConfig: NextConfig = {
   agentRules: false,
-  output: isStaticExport ? "export" : "standalone",
+  output: isStaticExport ? "export" : isVercel ? undefined : "standalone",
   basePath: isStaticExport ? repositoryBasePath : undefined,
   trailingSlash: isStaticExport,
   turbopack: {
